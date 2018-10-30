@@ -35,6 +35,10 @@ export default {
 
            this.currentRouter=to.path;
       }
+   },
+   mounted(){
+       //刷新页面时，左侧导航栏样式和地址栏对应
+       this.currentRouter=this.$route.path;
    }
 }
 </script>

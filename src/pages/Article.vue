@@ -49,7 +49,7 @@
 	      </el-table-column>
 		</el-table>
 <!-- 模态框开始 -->
-<el-dialog :title="aDialog.title" :visible.sync="aDialog.visible" width="80%" :modal='false' @open='open()' center>
+<el-dialog :title="aDialog.title" :visible.sync="aDialog.visible" width="80%" :modal='false' @open='open()' center fullscreen>
 
    
 	<el-form :model="form" ref="form" label-width="100px" class="demo-ruleForm">

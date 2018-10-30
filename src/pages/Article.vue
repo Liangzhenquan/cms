@@ -4,7 +4,7 @@
 		<div class="btns">
 			<el-button size='mini' @click='toAddArticle'>发布文章</el-button>
 			<el-button size='mini' @click='batchDeleteArticle'>批量删除</el-button>
-			<el-select v-model="aCategory.id" placeholder="请选择栏目" size='mini' @change='valChange'>
+			<el-select v-model="aCategory.id" placeholder="所有栏目" size='mini' @change='valChange'>
 				<el-option :key='c.id' v-for='c in categories' :label="c.name" :value="c.id"></el-option>
 			</el-select>
 		</div>
@@ -113,9 +113,19 @@
 					title:'',
 					content:'',
 					categoryId:'',
-					liststyle:'1',		
+					liststyle:'style-one',		
 				},
-         
+				//保存或修改时，将模态框form数据保存以发送
+				paramsForm:{},
+				//查询文章要的数据 由于axios.get接收的参数是{params},所以params放在一个对象中
+
+                outParams:{
+                	params:{
+                       page:0,
+                       pageSize:100,
+                       categoryId:null      //为null时是查看所有文章
+                	}
+                },
                 // 表单验证规则
 				rules:{
 					title:[{ required: true, message: '标题不能为空',trigger:'blur'}
@@ -132,34 +142,51 @@
 			}
 		},
 		created(){
+			this.findArticle();
 			this.findAllCategory();
 		},
 		methods:{
 			open(){
-				this.$refs['form'].clearValidate();
+				if(this.$refs['form']){
+				 this.$refs['form'].clearValidate();
+				}
 
-			},
-			handleSizeChange(val){
-				console.log(`每页${val}条`);
-			},
-			handleCurrentChange(val){
-				console.log(`当前页:${val}`);
 			},
             // 表单验证
             saveOrUpdateArticle(formName) {
+
             	this.$refs[formName].validate((valid) => {
             		if (valid) {		   
-            		    //表单验证成功时提交数据       
-            		    axios.post('/manager/article/saveOrUpdateArticle',this.form)
-            		    .then(()=>{
+            		    //表单验证成功时提交数据 
+
+            		    //如果是从修改跳转来，则将id和列表样式发送
+    		            if(this.aDialog.title=='修改文章'){
+	            		    this.params.id=this.form.id;
+	            		    this.params.liststyle=this.form.liststyle;
+	            		};
+	            		    this.paramsForm.title=this.form.title;
+	            		    this.paramsForm.content=this.form.content;
+	            		    this.paramsForm.categoryId=this.form.categoryId;
+	            	
+            		    axios.post('/manager/article/saveOrUpdateArticle',this.paramsForm)
+            		    .then((result)=>{
+
             		    	this.aDialog.visible=false;   //关闭模态框
-            		    	this.$message({
+            		    	if(result.status==200){
+	            		    	this.$message({
+									showClose: true,
+									message: '发布成功',
+									type: 'success'
+						        });
+	                            // 传递栏目id刷新页面
+	            		    	this.findArticle(this.form.categoryId);
+	            		    }else{
+	            		    	this.$message({
 								showClose: true,
-								message: '发布成功',
-								type: 'success'
-					        });
-                            // 传递栏目id刷新页面
-            		    	this.findArticle(this.form.categoryId);
+								message: '数据错误',
+								type: 'error'
+						});
+	            		    }
             		    })
             		    .catch(()=>{
             		    	this.$message({
@@ -179,7 +206,9 @@
             },
 			// 当下拉列表框选项改变时传递栏目id值给findAllArticle来查找
 			valChange(val){
-				this.findArticle(val);
+				this.outParams.params.categoryId=val;
+				this.findArticle();
+
 			},
 			resetForm(form){
 					this.$refs[form].resetFields();
@@ -198,10 +227,9 @@
              toUpdateArticle(row){
              	  this.aDialog.title='修改文章',
              	  this.aDialog.visible=true,
-				// assign合并对象，将要修改的行的数据合并到form中，解决修改模态框数据改变时，表格内容的变化        	  
+				// assign合并对象，将要修改的行的数据合并到form中，解决修改模态框数据改变时，表格内容的变化   
 			      Object.assign(this.form,row);   
-             	 
-             	  this.form.content=row.content
+             	  // this.form.content=row.content;
              },
              // 通过id删除文章
              deleteArticle(id){
@@ -292,7 +320,7 @@
 			},
 			// 查找文章
 			findArticle(id){
-				axios.get('/manager/article/findArticle?page=0&pageSize=100&categoryId='+id)
+				axios.get('/manager/article/findArticle',this.outParams)
 				.then(({data:result})=>{
 					this.articles=result.data.list;
 

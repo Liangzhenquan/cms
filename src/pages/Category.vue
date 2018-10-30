@@ -111,7 +111,10 @@ width="150">
 		methods:{
 			//通过监听模态框执行表单验证结果重置
 			open(){
-				this.$refs['form'].clearValidate();
+				//判断是否有form需要清除验证
+				if(this.$refs['form']){
+				  this.$refs['form'].clearValidate();
+				}
 			},
 			// 查询所有栏目
 			findAllCategory(){
@@ -122,7 +125,6 @@ width="150">
 					this.categories=result.data.filter((item)=>{
 						return item.name;
 					});
-					
 				})
 				.catch(()=>{
 					this.$message({

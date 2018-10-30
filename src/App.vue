@@ -32,12 +32,11 @@ export default {
    },
    watch:{
       '$route':function(to,from){
-
            this.currentRouter=to.path;
       }
    },
    mounted(){
-       //刷新页面时，左侧导航栏样式和地址栏对应
+       //将地址栏虚拟路由赋值,刷新页面时，左侧导航栏样式和地址栏对应
        this.currentRouter=this.$route.path;
    }
 }

@@ -220,6 +220,7 @@
 			// 当下拉列表框选项改变时传递栏目id值给findAllArticle来查找
 			valChange(val){
 				this.params.categoryId=val;
+				this.params.page=0;   //查询栏目下拉框值改变时，重置查询当前页为0
 				this.findArticle();
 
 			},
@@ -349,6 +350,7 @@
 
 				})
 			},
+			//获取要选择的文章，便于批量删除
 			handleSelectionChange(val){
 				this.multipleSelection = val;
 			},
@@ -365,5 +367,8 @@
 	}
 	i.fa.fa-trash {
 		color: #F56C6C;
+	}
+	.block{
+		
 	}
 </style>

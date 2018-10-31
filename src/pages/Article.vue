@@ -159,15 +159,17 @@
             		if (valid) {		   
             		    //表单验证成功时提交数据 
 
-            		    //如果是从修改跳转来，则将id和列表样式发送
+            		    //如果是从修改跳转来，则将id和列表样式和审核状态及发布时间发送，否则修改后审核状态和发布时间变空 
     		            if(this.aDialog.title=='修改文章'){
-	            		    this.params.id=this.form.id;
-	            		    this.params.liststyle=this.form.liststyle;
+	            		    this.paramsForm.id=this.form.id;
+	            		    this.paramsForm.liststyle=this.form.liststyle;
+	            		    this.paramsForm.status=this.form.status;
+	            	        this.paramsForm.publishtime=this.form.publishtime;
 	            		};
 	            		    this.paramsForm.title=this.form.title;
 	            		    this.paramsForm.content=this.form.content;
 	            		    this.paramsForm.categoryId=this.form.categoryId;
-	            	
+	            	       
             		    axios.post('/manager/article/saveOrUpdateArticle',this.paramsForm)
             		    .then((result)=>{
 

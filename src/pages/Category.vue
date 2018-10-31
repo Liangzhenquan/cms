@@ -76,7 +76,7 @@ width="150">
 		data(){
 			return {
 				loading:false,
-
+                total:10,
 				categories:[],
 				multipleSelection:[],     //复选框选中时保存的id值
 				// 用来给模态框设置状态 visible为false则隐藏，title用来设置头部信息

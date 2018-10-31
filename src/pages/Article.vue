@@ -79,16 +79,14 @@
 </el-dialog>
 <!-- 模态框结束 -->
 <!-- 分页开始 -->
-<!-- <div class="block">
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page.sync="currentPage3"
-      :page-size="100"
-      layout="prev, pager, next, jumper"
-      :total="1000">
-    </el-pagination>
-  </div> -->
+<div class="block">
+  <el-pagination
+    @current-change='handleCurrentChange'
+    layout="prev, pager, next"
+	:page-size='params.pageSize'
+    :total="total">
+  </el-pagination>
+</div>
 <!-- 分页结束 -->
 </div>
 </template>
@@ -98,6 +96,7 @@
 	export default{
 		data(){
 			return {
+				total:null,
 				articles:[],
 				categories:[],
 				multipleSelection:[],
@@ -117,14 +116,12 @@
 				},
 				//保存或修改时，将模态框form数据保存以发送
 				paramsForm:{},
-				//查询文章要的数据 由于axios.get接收的参数是{params},所以params放在一个对象中
 
-                outParams:{
+				//查询文章要的数据
                 	params:{
                        page:0,
-                       pageSize:100,
+                       pageSize:7,
                        categoryId:null      //为null时是查看所有文章
-                	}
                 },
                 // 表单验证规则
 				rules:{
@@ -141,16 +138,30 @@
 
 			}
 		},
+		watch:{
+           params:{
+           	   handler(){
+           	   	console.log(1);
+           	   	  this.findArticle();
+           	   },
+           	   deep:true
+           }
+		},
 		created(){
 			this.findArticle();
 			this.findAllCategory();
 		},
 		methods:{
+			//模态框打开则清除表单验证结果
 			open(){
 				if(this.$refs['form']){
 				 this.$refs['form'].clearValidate();
 				}
 
+			},
+			//当分页功能当前页改变时触发
+			handleCurrentChange(val){
+				this.params.page=val-1;
 			},
             // 表单验证
             saveOrUpdateArticle(formName) {
@@ -208,7 +219,7 @@
             },
 			// 当下拉列表框选项改变时传递栏目id值给findAllArticle来查找
 			valChange(val){
-				this.outParams.params.categoryId=val;
+				this.params.categoryId=val;
 				this.findArticle();
 
 			},
@@ -217,7 +228,6 @@
 			},
             // 通过发布文章按钮打开模态框
             toAddArticle(){
-                 // 通过新增按钮打开模态框	
                  //清空form数据以重置模态框，打开模态框
                 for(var key in this.form){
 						delete this.form[key];
@@ -322,8 +332,11 @@
 			},
 			// 查找文章
 			findArticle(id){
-				axios.get('/manager/article/findArticle',this.outParams)
+				axios.get('/manager/article/findArticle',{
+					params:this.params
+				})
 				.then(({data:result})=>{
+					this.total=result.data.total;
 					this.articles=result.data.list;
 
 				})
@@ -352,10 +365,5 @@
 	}
 	i.fa.fa-trash {
 		color: #F56C6C;
-	}
-	.block{
-		position: fixed;
-		top: 550px;
-		left: 30%;
 	}
 </style>

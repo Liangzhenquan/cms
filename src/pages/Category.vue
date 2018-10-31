@@ -49,6 +49,7 @@ width="150">
 		</el-form-item>
 		<el-form-item label="父栏目" :rules='rules.parentId' label-width="6em" prop='parentId'>
 			<el-select v-model="form.parentId" placeholder="一级栏目">
+			    <!-- <el-option :key='s.id'  v-for='s in cDefault'  :value='s.id' :label="s.name"></el-option> -->
 				<el-option :key='c.id' v-for='c in categories' :label="c.name" :value="c.id"></el-option>
 
 			</el-select>
@@ -76,7 +77,11 @@ width="150">
 		data(){
 			return {
 				loading:false,
-
+                //给模态框父栏目下拉框默认值
+                // cDefault:[{
+                // 	id:62,
+                // 	name:'推荐'
+                // }],
 				categories:[],
 				multipleSelection:[],     //复选框选中时保存的id值
 				// 用来给模态框设置状态 visible为false则隐藏，title用来设置头部信息
@@ -95,9 +100,9 @@ width="150">
 					// comment:''
 				},
 				rules:{
-					parentId:[{
-						type:'number',required:true,message:'请选择栏目',trigger:'blur'
-					}],
+					// parentId:[{
+					// 	type:'number',required:true,message:'请选择栏目',trigger:'blur'
+					// }],
 					name:[{
 						required:true,message:'标题不能为空',trigger:'blur'
 					}]
@@ -151,6 +156,7 @@ width="150">
 			},
 			// 通过模态框确定按钮保存或更新修改数据
 			saveOrUpdateCategory(form){
+				console.log(this.form);
 				this.$refs[form].validate((valid) => {
 					if (valid) {		   
             		    //表单验证成功时提交数据       

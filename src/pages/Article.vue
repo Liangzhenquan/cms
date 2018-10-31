@@ -96,7 +96,7 @@
 	export default{
 		data(){
 			return {
-				total:null,
+				total:null,       //接收后台返回的文章总目数
 				articles:[],
 				categories:[],
 				multipleSelection:[],
@@ -119,8 +119,8 @@
 
 				//查询文章要的数据
                 	params:{
-                       page:0,
-                       pageSize:7,
+                       page:0,              //当前页数为0
+                       pageSize:7,          //每页文章数大小为7
                        categoryId:null      //为null时是查看所有文章
                 },
                 // 表单验证规则
@@ -321,7 +321,11 @@
 			findAllCategory(){
 				axios.get('/manager/category/findAllCategory')
 				.then(({data:result})=>{
-					this.categories=result.data;
+
+					//过滤没有栏目名字的
+					this.categories=result.data.filter((item)=>{
+						return item.name;   
+					});
 				})
 				.catch(()=>{
                        this.$message({
@@ -337,9 +341,8 @@
 					params:this.params
 				})
 				.then(({data:result})=>{
-					this.total=result.data.total;
+					this.total=result.data.total;  //获取文章总目数保存
 					this.articles=result.data.list;
-
 				})
 				.catch(()=>{
 					this.$message({
@@ -369,6 +372,7 @@
 		color: #F56C6C;
 	}
 	.block{
-		
+        width: 20%;
+        margin: 0 auto;
 	}
 </style>
